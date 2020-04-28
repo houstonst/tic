@@ -1,6 +1,6 @@
 #!/usr/bin/env python
 
-import socket, threading
+import socket, _thread
 
 #specify network parameters
 HOST = "127.0.0.1"
