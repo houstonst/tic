@@ -24,6 +24,8 @@ while True:
     message = input()
     encoded_message = message.encode("utf-8")
     if message == "exit":
+        exit_message = "Left the session.".encode("utf-8")
+        client_socket.sendall(exit_message)
         client_socket.sendall(encoded_message)
         break
     else:
