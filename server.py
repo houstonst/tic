@@ -17,7 +17,6 @@ server_socket.bind((HOST, PORT))
 #define this as a listening socket
 server_socket.listen(2)
 
-
 #close server socket if users have all left the session
 def close_session():
 	print("Closing session...")
