@@ -44,10 +44,9 @@ def handle_user(conn, addr):
 		data = conn.recv(1024)
 		readable_data = data.decode()
 		if readable_data == "exit":
+			print("[{}]: {}".format(readable_username, "Left the session."))
 			remove_user(conn)
 			break
-		elif readable_data == "Left the session.":
-			print("[{}]: {}".format(readable_username, readable_data))
 		elif users[conn] == False:
 			print("Wait until the other user takes their turn...")
 		else:
