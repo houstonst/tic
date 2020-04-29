@@ -46,13 +46,14 @@ def handle_user(conn, addr):
 		if readable_data == "exit":
 			remove_user(conn)
 			break
+		elif readable_data == "Left the session.":
+			print("[{}]: {}".format(readable_username, readable_data))
+		elif users[conn] == False:
+			print("Wait until the other user takes their turn...")
 		else:
-			if users[conn] == False:
-				print("Wait until the other user takes their turn...")
-			else:
-				print("[{}]: {}".format(readable_username, readable_data))
-				users = {key: True for key in users}
-				users[conn] = False
+			print("[{}]: {}".format(readable_username, readable_data))
+			users = {key: True for key in users}
+			users[conn] = False
 
 #run the server
 while True:
