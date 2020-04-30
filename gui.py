@@ -10,6 +10,9 @@ class GUI:
         self.master = master
         master.title("A simple GUI")
 
+        self.master = Frame(self.master, width=500, height=300)
+        self.master.pack()
+
         self.label = Label(master, text="This is our first GUI!")
         self.label.pack()
 
@@ -21,18 +24,12 @@ class GUI:
 
         self.initialize_socket()
 
-        self.enter = Entry()
-        self.username = self.enter.get()
+        self.enter = Entry(root)
         self.enter.pack()
 
-        self.send_button = Button(master, text="Send", command=self.send_user)
+        self.send_button = Button(master, text="Send Username", command=self.send_user)
         self.send_button.pack()
 
-        # username = enter.get()
-        # username.pack()
-        # self.client_socket.send(enter.get().encode('utf-8'))
-
-        # self.get_username()
         self.to_server()
         self.client_socket.close()
 
@@ -46,8 +43,8 @@ class GUI:
         print("Greetings!")
 
     def send_user(self):
-        print("test")
-        print(self.username) #it doesn't print anything
+        self.username = self.enter.get()
+        print(self.username)
         self.client_socket.send(self.username.encode('utf-8'))
 
     # def get_username(event):
