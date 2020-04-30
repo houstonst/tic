@@ -46,7 +46,7 @@ class GUI:
 
     def to_server(self):
         while True:
-            message = input()
+            message = input() # we don't have to create another entry, just use this
             encoded_message = message.encode("utf-8")
             if message == "exit":
                 exit_message = "Left the session.".encode("utf-8")
