@@ -30,27 +30,39 @@ def remove_user(conn):
 		if (len(users) == 0):
 			close_session()
 
+#send a message from one user to another
+def forward_message(conn, encoded_message):
+	for user_conn in users.keys():
+		if user_conn != conn:
+			user_conn.send(encoded_message)
+
 #user functionality
-def handle_user(conn, addr):
+def handle_user(conn):
 	global users
 
 	#receive username
-	username = conn.recv(1024)
-	readable_username = username.decode()
-	print("{} connected.".format(readable_username))
+	encoded_username = conn.recv(1024)
+	username = encoded_username.decode()
+	print("{} connected.".format(username))
 
 	#receive messages
 	while True:
-		data = conn.recv(1024)
-		readable_data = data.decode()
-		if readable_data == "exit":
-			print("[{}]: {}".format(readable_username, "Left the session."))
+		encoded_message = conn.recv(1024)
+		message = encoded_message.decode()
+		if message == "exit":
+			print("[{}]: {}".format(username, "* Left the session *"))
 			remove_user(conn)
 			break
 		elif users[conn] == False:
 			print("Wait until the other user takes their turn...")
 		else:
-			print("[{}]: {}".format(readable_username, readable_data))
+			#send message to other user
+			modified_message = "[{}]: {}".format(username, message)
+			mod_encoded_message = modified_message.encode("utf-8")
+			forward_message(conn, mod_encoded_message)
+
+			#print message to server
+			print("[{}]: {}".format(username, message))
 			users = {key: True for key in users}
 			users[conn] = False
 
@@ -67,7 +79,7 @@ while True:
 			users[conn] = True
 
 		#start a thread for the new client
-		_thread.start_new_thread(handle_user, (conn, addr))
+		_thread.start_new_thread(handle_user, (conn,))
 
 	#no client connected. Quietly halt server.
 	except:
