@@ -19,14 +19,14 @@ print("Type exit to quit connection.\n")
 #send username
 client_socket.send(username.encode("utf-8"))
 
-#send messages
+#run client
 while True:
     message = input()
     encoded_message = message.encode("utf-8")
     if message == "exit":
-        exit_message = "Left the session.".encode("utf-8")
-        client_socket.sendall(exit_message)
-        client_socket.sendall(encoded_message)
+        session_message = "Left the session.".encode("utf-8")
+        client_socket.sendall(session_message) #prints "Left the session." to server terminal
+        client_socket.sendall(encoded_message) #gives "exit" to server which handles the message as a close socket command
         break
     else:
         client_socket.sendall(encoded_message)
