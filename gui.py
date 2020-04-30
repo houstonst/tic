@@ -4,7 +4,7 @@ import threading
 
 class GUI:
     # client_socket = None
-    last_received_message = None
+    # last_received_message = None
 
     def __init__(self, master):
         self.master = master
@@ -13,22 +13,21 @@ class GUI:
         self.master = Frame(self.master, width=500, height=300)
         self.master.pack()
 
-        self.label = Label(master, text="This is our first GUI!")
+        self.label = Label(master, text="Tic-Tac-Toe", padx=5, pady=5)
         self.label.pack()
-
-        self.greet_button = Button(master, text="Greet", command=self.greet)
-        self.greet_button.pack()
-
-        self.close_button = Button(master, text="Close", command=master.destroy)
-        self.close_button.pack()
 
         self.initialize_socket()
 
         self.enter = Entry(root)
         self.enter.pack()
 
+        # self.master.bind("<Enter>", self.send_user)
+
         self.send_button = Button(master, text="Send Username", command=self.send_user)
         self.send_button.pack()
+
+        self.close_button = Button(master, text="Close", command=master.destroy)
+        self.close_button.pack()
 
         self.to_server()
         self.client_socket.close()
@@ -39,20 +38,12 @@ class GUI:
         PORT = 2000
         self.client_socket.connect((HOST, PORT))
 
-    def greet(self):
-        print("Greetings!")
 
     def send_user(self):
         self.username = self.enter.get()
-        print(self.username)
         self.client_socket.send(self.username.encode('utf-8'))
 
-    # def get_username(event):
-    #     # print(event)
-    #     self.client_socket.send(username).encode('utf-8')
-    #     username = Entry()
-    #     self.client_socket.send(username.encode('utf-8'))
-    
+
     def to_server(self):
         while True:
             message = input()
