@@ -2,13 +2,13 @@ from tkinter import *
 import socket, sys, _thread
 
 class GUI:
-    def __init__(self, root):
+    def __init__(self):
         #define logic attributes
         self.username = None
 
         #define gui attributes
-        self.root = root
-        root.title("A simple GUI")
+        self.root = Tk()
+        self.root.title("A simple GUI")
         
         #create gui objects
         self.frame = Frame(self.root, width=500, height=300)
@@ -69,8 +69,7 @@ class GUI:
         sys.exit()
 
 #script
-root = Tk()
-gui = GUI(root)
+gui = GUI()
 gui.initialize_socket()
 _thread.start_new_thread(gui.receive_messages, ())
-root.mainloop()
+gui.root.mainloop()
