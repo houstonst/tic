@@ -64,10 +64,13 @@ while True:
     try:
         #accept new users
         conn, addr = server_socket.accept()
+        # if conn.recv(1024).decode() == "exit":
+        #     break
+        # break
         users += [conn]
         num = users.index(conn)
+
         #start a thread for the new client
         _thread.start_new_thread(handle_user, (conn, addr, num))
-
     except:
         break
