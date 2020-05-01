@@ -16,7 +16,8 @@ class GUI:
         self.enter = Entry(self.root)
         self.send_button = Button(self.root, text="Send Username", command=self.send_message)
         self.close_button = Button(self.root, text="Close", command=self.leave_session)
-        
+        self.root.bind("<Return>", self.send_message)
+
         #pack gui objects
         self.frame.pack()
         self.label.pack()
@@ -31,14 +32,19 @@ class GUI:
         PORT = 2000
         self.client_socket.connect((HOST, PORT))
 
+    #deleted the text in the text box so the user doesn't have to
+    def text_delete(self):
+        self.enter.delete(first=0, last=100)
+
     #send messages to server
-    def send_message(self):
+    def send_message(self, *event):
         #accept username as first message
         if self.username == None:
             self.username = self.enter.get()
             print("Hello " + self.username + ".")
             self.client_socket.send(self.username.encode('utf-8'))
             self.send_button.config(text = "Send Message")
+            self.text_delete()
 
         #all follow on entries are normal messages
         else:
@@ -46,6 +52,7 @@ class GUI:
             encoded_message = message.encode("utf-8")
             print("[you]: {}".format(message))
             self.client_socket.send(encoded_message)
+            self.text_delete()
         
     #receive message thread
     def receive_messages(self):
