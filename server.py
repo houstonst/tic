@@ -51,7 +51,7 @@ def handle_user(conn):
 		encoded_message = conn.recv(1024)
 		message = encoded_message.decode()
 		if message == "exit":
-			print("[{}]: {}".format(username, "* Left the session *"))
+			print("[{}]: {}".format(username, "Left the session."))
 			remove_user(conn)
 			break
 		elif users[conn] == False:

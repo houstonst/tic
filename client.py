@@ -1,49 +1,76 @@
-#!/usr/bin/env python
+from tkinter import *
+import socket, sys, _thread
 
-import socket, _thread
+class GUI:
+    def __init__(self, root):
+        #define logic attributes
+        self.username = None
 
-#request username
-print("Enter a username:")
-username = input()
-
-#specify network parameters
-HOST = "127.0.0.1"
-PORT = 2000
-
-#establish socket
-client_socket = socket.socket(socket.AF_INET, socket.SOCK_STREAM)
-client_socket.connect((HOST, PORT))
-print("Connected to {}.".format(HOST))
-print("Type exit to quit connection.\n")
-
-#send username
-client_socket.send(username.encode("utf-8"))
-
-#receive message thread
-def receive_messages():
-    while True:
-        try:
-            encoded_message = client_socket.recv(1024)
-            print(encoded_message.decode())
-        except:
-            break
-
-#run client
-while True:
-    #talk and listen simultaneously
-    _thread.start_new_thread(receive_messages, ())
-    
-    #form message
-    message = input()
-    encoded_message = message.encode("utf-8")
-    
-    #interpret message
-    if message == "exit":
-        client_socket.sendall(encoded_message) #gives "exit" to server which handles the message as a close socket command
-        break
-    else:
-        client_socket.sendall(encoded_message)
+        #define gui attributes
+        self.root = root
+        root.title("A simple GUI")
         
-    
-#close the connection
-client_socket.close()
+        #create gui objects
+        self.frame = Frame(self.root, width=500, height=300)
+        self.label = Label(self.root, text="Tic-Tac-Toe", padx=5, pady=5)
+        self.enter = Entry(self.root)
+        self.send_button = Button(self.root, text="Send Username", command=self.send_message)
+        self.close_button = Button(self.root, text="Close", command=self.leave_session)
+        
+        #pack gui objects
+        self.frame.pack()
+        self.label.pack()
+        self.enter.pack()
+        self.send_button.pack()
+        self.close_button.pack()
+
+    #begin connection to server
+    def initialize_socket(self):
+        self.client_socket = socket.socket(socket.AF_INET, socket.SOCK_STREAM)
+        HOST = "127.0.0.1"
+        PORT = 2000
+        self.client_socket.connect((HOST, PORT))
+
+    #send messages to server
+    def send_message(self):
+        #accept username as first message
+        if self.username == None:
+            self.username = self.enter.get()
+            print("Hello " + self.username + ".")
+            self.client_socket.send(self.username.encode('utf-8'))
+            self.send_button.config(text = "Send Message")
+
+        #all follow on entries are normal messages
+        else:
+            message = self.enter.get()
+            encoded_message = message.encode("utf-8")
+            print("[you]: {}".format(message))
+            self.client_socket.send(encoded_message)
+        
+    #receive message thread
+    def receive_messages(self):
+        while True:
+            try:
+                encoded_message = self.client_socket.recv(1024)
+                print(encoded_message.decode())
+            except:
+                break
+
+    def leave_session(self):
+        #send message to end server connection
+        session_message = "Left the session.".encode("utf-8")
+        self.client_socket.sendall(session_message)
+        exit_message = "exit".encode("utf-8")
+        self.client_socket.sendall(exit_message)
+
+        #quit the gui, connection, and program respectively
+        self.root.destroy()
+        self.client_socket.close()
+        sys.exit()
+
+#script
+root = Tk()
+gui = GUI(root)
+gui.initialize_socket()
+_thread.start_new_thread(gui.receive_messages, ())
+root.mainloop()
