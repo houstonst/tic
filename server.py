@@ -8,8 +8,7 @@ HOST = "127.0.0.1"
 PORT = 2000
 
 #specify server parameters
-users = []
-is_turn = {0: True, 1: False}
+users = {} #stored as {conn: boolean} to indicate whether it's their turn
 
 #establish socket
 server_socket = socket.socket(socket.AF_INET, socket.SOCK_STREAM)
@@ -17,7 +16,7 @@ server_socket.setsockopt(socket.SOL_SOCKET, socket.SO_REUSEADDR, 1)
 server_socket.bind((HOST, PORT))
 
 #define this as a listening socket
-server_socket.listen(2)
+server_socket.listen()
 
 #close server socket if users have all left the session
 def close_session():
@@ -26,51 +25,63 @@ def close_session():
 
 #remove user function
 def remove_user(conn):
-    if conn in users:
-        conn.close()
-        users.remove(conn)
-        if (len(users) == 0):
-            close_session()
+	if conn in users:
+		conn.close()
+		users.pop(conn)
+		if (len(users) == 0):
+			close_session()
+
+#send a message from one user to another
+def forward_message(conn, encoded_message):
+	for user_conn in users.keys():
+		if user_conn != conn:
+			user_conn.send(encoded_message)
 
 #user functionality
-def handle_user(conn, addr, num):
-    #receive username
-    username = conn.recv(1024)
-    readable_username = username.decode()
-    print("{} connected.".format(readable_username))
+def handle_user(conn):
+	global users
 
-    #receive messages
-    while True:
-        data = conn.recv(1024)
-        readable_data = data.decode()
-        if readable_data == "exit":
-            remove_user(conn)
-            break
-        else:
-            if is_turn[num] == False:
-                print("Wait until the other user takes their turn...")
-            else:
-                print("[{}]: {}".format(readable_username, readable_data))
-            if num == 0:
-                is_turn[num] = False
-                is_turn[num+1] = True
-            else:
-                is_turn[num] = False
-                is_turn[num-1] = True
-            #after they print something, is_turn = false
-            #other users is_turn = true
-        #run the server
+	#receive username
+	encoded_username = conn.recv(1024)
+	username = encoded_username.decode()
+	print("{} connected.".format(username))
+
+	#receive messages
+	while True:
+		encoded_message = conn.recv(1024)
+		message = encoded_message.decode()
+		if message == "exit":
+			print("[{}]: {}".format(username, "* Left the session *"))
+			remove_user(conn)
+			break
+		elif users[conn] == False:
+			print("Wait until the other user takes their turn...")
+		else:
+			#send message to other user
+			modified_message = "[{}]: {}".format(username, message)
+			mod_encoded_message = modified_message.encode("utf-8")
+			forward_message(conn, mod_encoded_message)
+
+			#print message to server
+			print("[{}]: {}".format(username, message))
+			users = {key: True for key in users}
+			users[conn] = False
+
+#run the server
 while True:
-    try:
-        #accept new users
-        conn, addr = server_socket.accept()
-        # if conn.recv(1024).decode() == "exit":
-        #     break
-        # break
-        users += [conn]
-        num = users.index(conn)
+	try:
+		#accept new user connection
+		conn, addr = server_socket.accept()
 
-        #start a thread for the new client
-        _thread.start_new_thread(handle_user, (conn, addr, num))
-    except:
-        break
+		#populate dictionary
+		if True in users.values():
+			users[conn] = False
+		else:
+			users[conn] = True
+
+		#start a thread for the new client
+		_thread.start_new_thread(handle_user, (conn,))
+
+	#no client connected. Quietly halt server.
+	except:
+		break
