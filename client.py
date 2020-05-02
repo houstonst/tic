@@ -14,27 +14,27 @@ class GUI:
         
         #create gui objects
         self.frame = Frame(self.root, width=500, height=300)
-        self.enter = Entry(self.root)
-        self.send_button = Button(self.root, text="Send Username", command=self.send_message)
-        self.close_button = Button(self.root, text="Close", command=self.leave_session)
+        self.enter = Entry(self.frame)
+        self.send_button = Button(self.frame, text="Send Username", command=self.send_message)
+        self.close_button = Button(self.frame, text="Close", command=self.leave_session)
         self.root.bind("<Return>", self.send_message)
         
         #create grid
-        self.tl = box(self.frame, "x", (0,0), False)
-        self.tm = box(self.frame, "o", (0,1), False)
-        self.tr = box(self.frame, "b", (0,2), True)
-        self.ml = box(self.frame, "b", (1,0), False)
-        self.mm = box(self.frame, "x", (1,1), False)
-        self.mr = box(self.frame, "x", (1,2), True)
-        self.bl = box(self.frame, "b", (2,0), False)
-        self.bm = box(self.frame, "o", (2,1), False)
-        self.br = box(self.frame, "x", (2,2), True)
+        self.tl = box(self.frame, "x", (0,0))
+        self.tm = box(self.frame, "o", (0,1))
+        self.tr = box(self.frame, "b", (0,2))
+        self.ml = box(self.frame, "b", (1,0))
+        self.mm = box(self.frame, "x", (1,1))
+        self.mr = box(self.frame, "x", (1,2))
+        self.bl = box(self.frame, "b", (2,0))
+        self.bm = box(self.frame, "o", (2,1))
+        self.br = box(self.frame, "x", (2,2))
 
         #pack gui objects
+        self.enter.grid(row=3, column=0)
+        self.send_button.grid(row=4, column=0)
+        self.close_button.grid(row=3, column=2)
         self.frame.pack()
-        self.enter.pack()
-        self.send_button.pack()
-        self.close_button.pack()
 
     #begin connection to server
     def initialize_socket(self):

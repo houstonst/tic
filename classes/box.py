@@ -2,7 +2,10 @@ from tkinter import *
 from PIL import Image, ImageTk
 
 class box:
-    def __init__(self, frame, img, pos, is_set):
+    def __init__(self, frame, img, pos):
+        #variable for whether the box can be changed
+        self.is_set = False
+
         #define image choices
         self.blank_img = Image.open("./graphics/blank.PNG")
         self.x_img = Image.open("./graphics/x.PNG")
@@ -26,10 +29,11 @@ class box:
         #pack box into GUI frame
         self.label.grid(row=pos[0], column=pos[1])
 
-        if is_set == False:
-            #bind events
-            self.label.bind("<Enter>", self.mouse_over)
-            self.label.bind("<Leave>", self.mouse_leave)
+        #bind events. Saved ID's so they can be unbinded later
+        if self.is_set == False:
+            self.mouse_over_id = self.label.bind("<Enter>", self.mouse_over)
+            self.mouse_leave_id = self.label.bind("<Leave>", self.mouse_leave)
+            self.mouse_click_id = self.label.bind("<Button-1>", self.mouse_click)            
     
     def mouse_over(self, event):
         self.graphic = ImageTk.PhotoImage(self.x_img)
@@ -38,3 +42,14 @@ class box:
     def mouse_leave(self, event):
         self.graphic = ImageTk.PhotoImage(self.blank_img)
         self.label.configure(image=self.graphic)
+
+    def mouse_click(self, event):
+        self.graphic = ImageTk.PhotoImage(self.x_img)
+        self.label.configure(image=self.graphic)
+        self.unbind()
+
+    #unbind events so a set box cannot be changed
+    def unbind(self):
+        self.label.unbind("<Enter>", self.mouse_over_id)
+        self.label.unbind("<Leave>", self.mouse_leave_id)
+        self.label.unbind("<Button-1>", self.mouse_click_id)
