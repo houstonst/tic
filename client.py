@@ -8,7 +8,8 @@ class GUI:
 
         #define gui attributes
         self.root = Tk()
-        self.root.title("A simple GUI")
+        self.root.title("Tic-Tac-Toe")
+        self.root.iconbitmap("./graphics/favicon.ico")
         
         #create gui objects
         self.frame = Frame(self.root, width=500, height=300)
