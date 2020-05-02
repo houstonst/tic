@@ -1,5 +1,30 @@
 from tkinter import *
+from PIL import Image, ImageTk
 import socket, sys, _thread
+
+class box:
+    def __init__(self, frame, img, pos):
+        graphic = None
+
+        #create blank, X, or O image
+        if img == "b":
+            blank_img = Image.open("./graphics/blank.PNG")
+            graphic = ImageTk.PhotoImage(blank_img)
+        elif img == "x":
+            x_img = Image.open("./graphics/x.PNG")
+            graphic = ImageTk.PhotoImage(x_img)
+        else:
+            o_img = Image.open("./graphics/o.PNG")
+            graphic = ImageTk.PhotoImage(o_img)
+
+        #create the object
+        self.label = Label(frame, image=graphic, borderwidth=5, relief="solid")
+
+        #create image reference or it won't display for some reason
+        self.label.image = graphic
+
+        #pack box into GUI frame
+        self.label.grid(row=pos[0], column=pos[1])
 
 class GUI:
     def __init__(self):
@@ -17,44 +42,23 @@ class GUI:
         self.send_button = Button(self.root, text="Send Username", command=self.send_message)
         self.close_button = Button(self.root, text="Close", command=self.leave_session)
         self.root.bind("<Return>", self.send_message)
-
+        
         #create grid
-        """
-        t: top
-        m: middle
-        b: bottom
-        l: left
-        r: right
-
-        Ex.) tm: top-left, mm: middle-middle
-        """
-
-        self.tl = Label(self.frame, text="placeholder", width=50, height=15, bg='grey', borderwidth=5, relief="solid")
-        self.tm = Label(self.frame, text="placeholder", width=50, height=15, bg='grey', borderwidth=5, relief="solid")
-        self.tr = Label(self.frame, text="placeholder", width=50, height=15, bg='grey', borderwidth=5, relief="solid")
-        self.ml = Label(self.frame, text="placeholder", width=50, height=15, bg='grey', borderwidth=5, relief="solid")
-        self.mm = Label(self.frame, text="placeholder", width=50, height=15, bg='grey', borderwidth=5, relief="solid")
-        self.mr = Label(self.frame, text="placeholder", width=50, height=15, bg='grey', borderwidth=5, relief="solid")
-        self.bl = Label(self.frame, text="placeholder", width=50, height=15, bg='grey', borderwidth=5, relief="solid")
-        self.bm = Label(self.frame, text="placeholder", width=50, height=15, bg='grey', borderwidth=5, relief="solid")
-        self.br = Label(self.frame, text="placeholder", width=50, height=15, bg='grey', borderwidth=5, relief="solid")
+        self.tl = box(self.frame, "x", (0,0))
+        self.tm = box(self.frame, "o", (0,1))
+        self.tr = box(self.frame, "b", (0,2))
+        self.ml = box(self.frame, "b", (1,0))
+        self.mm = box(self.frame, "x", (1,1))
+        self.mr = box(self.frame, "x", (1,2))
+        self.bl = box(self.frame, "b", (2,0))
+        self.bm = box(self.frame, "o", (2,1))
+        self.br = box(self.frame, "x", (2,2))
 
         #pack gui objects
         self.frame.pack()
         self.enter.pack()
         self.send_button.pack()
         self.close_button.pack()
-
-        #pack grid objects
-        self.tl.grid(row=0, column=0)
-        self.tm.grid(row=0, column=1)
-        self.tr.grid(row=0, column=2)
-        self.ml.grid(row=1, column=0)
-        self.mm.grid(row=1, column=1)
-        self.mr.grid(row=1, column=2)
-        self.bl.grid(row=2, column=0)
-        self.bm.grid(row=2, column=1)
-        self.br.grid(row=2, column=2)
 
     #begin connection to server
     def initialize_socket(self):
@@ -65,7 +69,7 @@ class GUI:
 
     #deleted the text in the text box so the user doesn't have to
     def text_delete(self):
-        self.enter.delete(first=0, last=100)
+        self.enter.delete(first=0, last=200)
 
     #send messages to server
     def send_message(self, *event):
