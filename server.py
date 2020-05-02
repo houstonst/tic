@@ -3,7 +3,7 @@
 import socket, _thread
 
 class Server:
-	def initialize_server(self):
+	def __init__(self):
 		#specify network parameter
 		HOST = "127.0.0.1"
 		PORT = 2000
@@ -88,5 +88,4 @@ class Server:
 
 #starts the server
 server = Server()
-server.initialize_server()
 server.run_server()
