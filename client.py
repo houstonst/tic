@@ -13,18 +13,48 @@ class GUI:
         
         #create gui objects
         self.frame = Frame(self.root, width=500, height=300)
-        self.label = Label(self.root, text="Tic-Tac-Toe", padx=5, pady=5)
         self.enter = Entry(self.root)
         self.send_button = Button(self.root, text="Send Username", command=self.send_message)
         self.close_button = Button(self.root, text="Close", command=self.leave_session)
         self.root.bind("<Return>", self.send_message)
 
+        #create grid
+        """
+        t: top
+        m: middle
+        b: bottom
+        l: left
+        r: right
+
+        Ex.) tm: top-left, mm: middle-middle
+        """
+
+        self.tl = Label(self.frame, text="placeholder", width=50, height=15, bg='grey', borderwidth=5, relief="solid")
+        self.tm = Label(self.frame, text="placeholder", width=50, height=15, bg='grey', borderwidth=5, relief="solid")
+        self.tr = Label(self.frame, text="placeholder", width=50, height=15, bg='grey', borderwidth=5, relief="solid")
+        self.ml = Label(self.frame, text="placeholder", width=50, height=15, bg='grey', borderwidth=5, relief="solid")
+        self.mm = Label(self.frame, text="placeholder", width=50, height=15, bg='grey', borderwidth=5, relief="solid")
+        self.mr = Label(self.frame, text="placeholder", width=50, height=15, bg='grey', borderwidth=5, relief="solid")
+        self.bl = Label(self.frame, text="placeholder", width=50, height=15, bg='grey', borderwidth=5, relief="solid")
+        self.bm = Label(self.frame, text="placeholder", width=50, height=15, bg='grey', borderwidth=5, relief="solid")
+        self.br = Label(self.frame, text="placeholder", width=50, height=15, bg='grey', borderwidth=5, relief="solid")
+
         #pack gui objects
         self.frame.pack()
-        self.label.pack()
         self.enter.pack()
         self.send_button.pack()
         self.close_button.pack()
+
+        #pack grid objects
+        self.tl.grid(row=0, column=0)
+        self.tm.grid(row=0, column=1)
+        self.tr.grid(row=0, column=2)
+        self.ml.grid(row=1, column=0)
+        self.mm.grid(row=1, column=1)
+        self.mr.grid(row=1, column=2)
+        self.bl.grid(row=2, column=0)
+        self.bm.grid(row=2, column=1)
+        self.br.grid(row=2, column=2)
 
     #begin connection to server
     def initialize_socket(self):
