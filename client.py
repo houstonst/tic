@@ -64,9 +64,6 @@ class GUI:
                 break
 
     def leave_session(self):
-        #send message to end server connection
-        session_message = "Left the session.".encode("utf-8")
-        self.client_socket.sendall(session_message)
         exit_message = "exit".encode("utf-8")
         self.client_socket.sendall(exit_message)
 

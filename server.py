@@ -1,7 +1,6 @@
 #!/usr/bin/env python
 
 import socket, _thread
-from tkinter import Tk, Label, Button, Entry
 
 class Server:
 	def initialize_server(self):
@@ -10,7 +9,7 @@ class Server:
 		PORT = 2000
 
 		#specify server parameters
-		self.users = {} #stored as {conn: boolean} to indicate whether it's their turn
+		self.users = {} #stored as {socket connection: boolean} to indicate whether it's their turn
 
 		#establish socket
 		self.server_socket = socket.socket(socket.AF_INET, socket.SOCK_STREAM)
@@ -19,8 +18,6 @@ class Server:
 
 		#define this as a listening socket
 		self.server_socket.listen()
-		self.run_server()
-
 
 	#close server socket if users have all left the session
 	def close_session(self):
@@ -43,8 +40,6 @@ class Server:
 
 	#user functionality
 	def handle_user(self, conn):
-		global users
-
 		#receive username
 		encoded_username = conn.recv(1024)
 		username = encoded_username.decode()
@@ -76,8 +71,8 @@ class Server:
 		while True:
 			try:
 				#accept new user connection
-				conn, addr = self.server_socket.accept() #gets stuck here
-				# print("accept")
+				conn, addr = self.server_socket.accept()
+
 				#populate dictionary
 				if True in self.users.values():
 					self.users[conn] = False
@@ -94,3 +89,4 @@ class Server:
 #starts the server
 server = Server()
 server.initialize_server()
+server.run_server()
