@@ -1,8 +1,8 @@
 from tkinter import *
-from classes.box import box
+from classes.Box import Box
 import socket, sys, _thread
 
-class GUI:
+class Client:
     def __init__(self):
         #define logic attributes
         self.username = None
@@ -20,15 +20,15 @@ class GUI:
         self.root.bind("<Return>", self.send_message)
         
         #create grid
-        self.tl = box(self.frame, "x", (0,0))
-        self.tm = box(self.frame, "o", (0,1))
-        self.tr = box(self.frame, "b", (0,2))
-        self.ml = box(self.frame, "b", (1,0))
-        self.mm = box(self.frame, "x", (1,1))
-        self.mr = box(self.frame, "x", (1,2))
-        self.bl = box(self.frame, "b", (2,0))
-        self.bm = box(self.frame, "o", (2,1))
-        self.br = box(self.frame, "x", (2,2))
+        self.tl = Box(self.frame, "x", (0,0))
+        self.tm = Box(self.frame, "o", (0,1))
+        self.tr = Box(self.frame, "b", (0,2))
+        self.ml = Box(self.frame, "b", (1,0))
+        self.mm = Box(self.frame, "x", (1,1))
+        self.mr = Box(self.frame, "x", (1,2))
+        self.bl = Box(self.frame, "b", (2,0))
+        self.bm = Box(self.frame, "o", (2,1))
+        self.br = Box(self.frame, "x", (2,2))
 
         #pack gui objects
         self.enter.grid(row=3, column=0)
@@ -84,7 +84,7 @@ class GUI:
         sys.exit()
 
 #script
-gui = GUI()
-gui.initialize_socket()
-_thread.start_new_thread(gui.receive_messages, ())
-gui.root.mainloop()
+client = Client()
+client.initialize_socket()
+_thread.start_new_thread(client.receive_messages, ())
+client.root.mainloop()

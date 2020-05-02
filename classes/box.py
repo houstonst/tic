@@ -1,7 +1,7 @@
 from tkinter import *
 from PIL import Image, ImageTk
 
-class box:
+class Box:
     def __init__(self, frame, img, pos):
         #variable for whether the box can be changed
         self.is_set = False
