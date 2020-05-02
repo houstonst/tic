@@ -20,15 +20,15 @@ class Client:
         self.root.bind("<Return>", self.send_message)
         
         #create grid
-        self.tl = Box(self.frame, "x", (0,0))
-        self.tm = Box(self.frame, "o", (0,1))
+        self.tl = Box(self.frame, "b", (0,0))
+        self.tm = Box(self.frame, "b", (0,1))
         self.tr = Box(self.frame, "b", (0,2))
         self.ml = Box(self.frame, "b", (1,0))
-        self.mm = Box(self.frame, "x", (1,1))
-        self.mr = Box(self.frame, "x", (1,2))
+        self.mm = Box(self.frame, "b", (1,1))
+        self.mr = Box(self.frame, "b", (1,2))
         self.bl = Box(self.frame, "b", (2,0))
-        self.bm = Box(self.frame, "o", (2,1))
-        self.br = Box(self.frame, "x", (2,2))
+        self.bm = Box(self.frame, "b", (2,1))
+        self.br = Box(self.frame, "b", (2,2))
 
         #pack gui objects
         self.enter.grid(row=3, column=0)
