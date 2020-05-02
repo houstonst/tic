@@ -1,30 +1,6 @@
 from tkinter import *
-from PIL import Image, ImageTk
+from classes.box import box
 import socket, sys, _thread
-
-class box:
-    def __init__(self, frame, img, pos):
-        graphic = None
-
-        #create blank, X, or O image
-        if img == "b":
-            blank_img = Image.open("./graphics/blank.PNG")
-            graphic = ImageTk.PhotoImage(blank_img)
-        elif img == "x":
-            x_img = Image.open("./graphics/x.PNG")
-            graphic = ImageTk.PhotoImage(x_img)
-        else:
-            o_img = Image.open("./graphics/o.PNG")
-            graphic = ImageTk.PhotoImage(o_img)
-
-        #create the object
-        self.label = Label(frame, image=graphic, borderwidth=5, relief="solid")
-
-        #create image reference or it won't display for some reason
-        self.label.image = graphic
-
-        #pack box into GUI frame
-        self.label.grid(row=pos[0], column=pos[1])
 
 class GUI:
     def __init__(self):
@@ -44,15 +20,15 @@ class GUI:
         self.root.bind("<Return>", self.send_message)
         
         #create grid
-        self.tl = box(self.frame, "x", (0,0))
-        self.tm = box(self.frame, "o", (0,1))
-        self.tr = box(self.frame, "b", (0,2))
-        self.ml = box(self.frame, "b", (1,0))
-        self.mm = box(self.frame, "x", (1,1))
-        self.mr = box(self.frame, "x", (1,2))
-        self.bl = box(self.frame, "b", (2,0))
-        self.bm = box(self.frame, "o", (2,1))
-        self.br = box(self.frame, "x", (2,2))
+        self.tl = box(self.frame, "x", (0,0), False)
+        self.tm = box(self.frame, "o", (0,1), False)
+        self.tr = box(self.frame, "b", (0,2), True)
+        self.ml = box(self.frame, "b", (1,0), False)
+        self.mm = box(self.frame, "x", (1,1), False)
+        self.mr = box(self.frame, "x", (1,2), True)
+        self.bl = box(self.frame, "b", (2,0), False)
+        self.bm = box(self.frame, "o", (2,1), False)
+        self.br = box(self.frame, "x", (2,2), True)
 
         #pack gui objects
         self.frame.pack()
