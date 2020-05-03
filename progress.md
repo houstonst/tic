@@ -9,5 +9,5 @@
 
 ## To Do
 * Configure for WAN with port-forwarding
-* Assign users X's or O's
 * Stop the game when someone has 3 boxes in a row
+* Allow user to only send one symbol at a time
