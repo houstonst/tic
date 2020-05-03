@@ -2,10 +2,10 @@ from tkinter import *
 from PIL import Image, ImageTk
 
 class Box:
-    def __init__(self, frame, img, pos):
+    def __init__(self, frame, img, pos, sym):
         #variable for whether the box can be changed
         self.is_set = False
-
+        self.sym = sym
         #define image choices
         self.blank_img = Image.open("./graphics/blank.PNG")
         self.x_img = Image.open("./graphics/x.PNG")
@@ -36,7 +36,13 @@ class Box:
             self.mouse_click_id = self.label.bind("<Button-1>", self.mouse_click)            
     
     def mouse_over(self, event):
-        self.graphic = ImageTk.PhotoImage(self.x_img)
+        if (self.sym == 'X'):
+            self.i = self.x_img
+        elif (self.sym == 'O'):
+            self.i = self.o_img
+        else:
+            self.i = self.blank_img
+        self.graphic = ImageTk.PhotoImage(self.i)
         self.label.configure(image=self.graphic)
 
     def mouse_leave(self, event):
@@ -44,7 +50,7 @@ class Box:
         self.label.configure(image=self.graphic)
 
     def mouse_click(self, event):
-        self.graphic = ImageTk.PhotoImage(self.x_img)
+        self.graphic = ImageTk.PhotoImage(self.i)
         self.label.configure(image=self.graphic)
         self.unbind()
 

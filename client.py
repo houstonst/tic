@@ -19,16 +19,20 @@ class Client:
         self.close_button = Button(self.frame, text="Close", command=self.leave_session)
         self.root.bind("<Return>", self.send_message)
         
+
+    def init_grid(self, symbol):
+        self.symbol = symbol 
+
         #create grid
-        self.tl = Box(self.frame, "b", (0,0))
-        self.tm = Box(self.frame, "b", (0,1))
-        self.tr = Box(self.frame, "b", (0,2))
-        self.ml = Box(self.frame, "b", (1,0))
-        self.mm = Box(self.frame, "b", (1,1))
-        self.mr = Box(self.frame, "b", (1,2))
-        self.bl = Box(self.frame, "b", (2,0))
-        self.bm = Box(self.frame, "b", (2,1))
-        self.br = Box(self.frame, "b", (2,2))
+        self.tl = Box(self.frame, "b", (0,0), self.symbol)
+        self.tm = Box(self.frame, "b", (0,1), self.symbol)
+        self.tr = Box(self.frame, "b", (0,2), self.symbol)
+        self.ml = Box(self.frame, "b", (1,0), self.symbol)
+        self.mm = Box(self.frame, "b", (1,1), self.symbol)
+        self.mr = Box(self.frame, "b", (1,2), self.symbol)
+        self.bl = Box(self.frame, "b", (2,0), self.symbol)
+        self.bm = Box(self.frame, "b", (2,1), self.symbol)
+        self.br = Box(self.frame, "b", (2,2), self.symbol)
 
         #pack gui objects
         self.enter.grid(row=3, column=0)
@@ -53,6 +57,7 @@ class Client:
         if self.username == None:
             self.username = self.enter.get()
             print("Hello " + self.username + ".")
+            print("You are {}'s".format(self.symbol))
             self.client_socket.send(self.username.encode('utf-8'))
             self.send_button.config(text = "Send Message")
             self.text_delete()
@@ -70,7 +75,8 @@ class Client:
         while True:
             try:
                 encoded_message = self.client_socket.recv(1024)
-                print(encoded_message.decode())
+                self.symb = encoded_message.decode()
+                self.init_grid(self.symb)
             except:
                 break
 

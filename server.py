@@ -10,7 +10,7 @@ class Server:
 
 		#specify server parameters
 		self.users = {} #stored as {socket connection: boolean} to indicate whether it's their turn
-
+		self.symbols = ["X", "O"]
 		#establish socket
 		self.server_socket = socket.socket(socket.AF_INET, socket.SOCK_STREAM)
 		self.server_socket.setsockopt(socket.SOL_SOCKET, socket.SO_REUSEADDR, 1)
@@ -38,12 +38,18 @@ class Server:
 			if user_conn != conn:
 				user_conn.send(encoded_message)
 
+	def symbol_message(self, conn, encoded_message):
+		conn.send(encoded_message)
+
 	#user functionality
 	def handle_user(self, conn):
 		#receive username
+		user_symbol = self.symbols[list(self.users).index(conn)]
+		self.symbol_message(conn, user_symbol.encode('utf-8'))
 		encoded_username = conn.recv(1024)
 		username = encoded_username.decode()
 		print("{} connected.".format(username))
+		print("{} is {}'s".format(username, user_symbol))
 
 		#receive messages
 		while True:
