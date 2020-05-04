@@ -1,6 +1,5 @@
 from tkinter import *
 from PIL import Image, ImageTk
-# from client import Client
 
 class Box:
     def __init__(self, frame, img, pos, sym, sock, is_set):
@@ -65,13 +64,8 @@ class Box:
         encoded_message = (msg).encode("utf-8")
         self.sock.send(encoded_message)
         
-
     #unbind events so a set box cannot be changed
     def unbind(self):
         self.label.unbind("<Enter>", self.mouse_over_id)
         self.label.unbind("<Leave>", self.mouse_leave_id)
         self.label.unbind("<Button-1>", self.mouse_click_id)
-
-   
-
-        

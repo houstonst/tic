@@ -1,5 +1,3 @@
-#!/usr/bin/env python
-
 import socket, _thread
 
 class Server:
@@ -8,9 +6,10 @@ class Server:
 		HOST = "127.0.0.1"
 		PORT = 2000
 
-		#specify server parameters
+		#specify user parameters
 		self.users = {} #stored as {socket connection: boolean} to indicate whether it's their turn
 		self.symbols = ["X", "O"]
+
 		#establish socket
 		self.server_socket = socket.socket(socket.AF_INET, socket.SOCK_STREAM)
 		self.server_socket.setsockopt(socket.SOL_SOCKET, socket.SO_REUSEADDR, 1)
@@ -38,14 +37,19 @@ class Server:
 			if user_conn != conn:
 				user_conn.send(encoded_message)
 
-	def symbol_message(self, conn, encoded_message):
-		conn.send(encoded_message)
+	#assign each user an X or an O
+	def assign_symbol(self, conn):
+		user_symbol = self.symbols[list(self.users).index(conn)]
+		encoded_user_symbol = user_symbol.encode('utf-8')
+		conn.send(encoded_user_symbol)
+		return user_symbol
 
 	#user functionality
 	def handle_user(self, conn):
+		#assign user a symbol
+		user_symbol = self.assign_symbol(conn)
+
 		#receive username
-		user_symbol = self.symbols[list(self.users).index(conn)]
-		self.symbol_message(conn, user_symbol.encode('utf-8'))
 		encoded_username = conn.recv(1024)
 		username = encoded_username.decode()
 		print("{} connected.".format(username))
@@ -92,6 +96,6 @@ class Server:
 			except:
 				break
 
-#starts the server
+#script
 server = Server()
 server.run_server()

@@ -1,5 +1,5 @@
 from tkinter import *
-from classes.Box import Box
+from classes.box import Box
 import socket, sys, _thread
 
 class Client:
@@ -20,7 +20,7 @@ class Client:
         self.root.bind("<Return>", self.send_message)
 
     def init_grid(self, symbol):
-        #establishes X's or O's for the user
+        #assigns X's or O's for the user
         self.symbol = symbol 
 
         #create grid
@@ -43,11 +43,13 @@ class Client:
     #begin connection to server
     def initialize_socket(self):
         self.client_socket = socket.socket(socket.AF_INET, socket.SOCK_STREAM)
+
+        #connect to server's address and port
         HOST = "127.0.0.1"
         PORT = 2000
         self.client_socket.connect((HOST, PORT))
 
-    #deleted the text in the text box so the user doesn't have to
+    #delete the text in the text box after message is sent
     def text_delete(self):
         self.enter.delete(first=0, last=200)
 
@@ -69,6 +71,15 @@ class Client:
             print("[you]: {}".format(message))
             self.client_socket.send(encoded_message)
             self.text_delete()
+    
+    #sent coordinate of clicked box to other user
+    def handle_pos(self, pos):
+        string = str(pos)
+        tup = (int(string[0]), int(string[1]))
+        if (self.symbol == 'X'):
+            Box(self.frame, "o", tup, self.symbol, self.client_socket, True)
+        else:
+            Box(self.frame, "x", tup, self.symbol, self.client_socket, True)
 
     #receive message thread
     def receive_messages(self):
@@ -81,17 +92,9 @@ class Client:
                 else:
                     self.handle_pos(self.msg)
             except:
-                break
+                break    
 
-    def handle_pos(self, pos):
-        string = str(pos)
-        tup = (int(string[0]), int(string[1]))
-        if (self.symbol == 'X'):
-            Box(self.frame, "o", tup, self.symbol, self.client_socket, True)
-        else:
-            Box(self.frame, "x", tup, self.symbol, self.client_socket, True)
-    
-
+    #destroy program after clicking "close" button
     def leave_session(self):
         exit_message = "exit".encode("utf-8")
         self.client_socket.sendall(exit_message)
