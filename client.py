@@ -18,21 +18,21 @@ class Client:
         self.send_button = Button(self.frame, text="Send Username", command=self.send_message)
         self.close_button = Button(self.frame, text="Close", command=self.leave_session)
         self.root.bind("<Return>", self.send_message)
-        
 
     def init_grid(self, symbol):
+        #establishes X's or O's for the user
         self.symbol = symbol 
 
         #create grid
-        self.tl = Box(self.frame, "b", (0,0), self.symbol)
-        self.tm = Box(self.frame, "b", (0,1), self.symbol)
-        self.tr = Box(self.frame, "b", (0,2), self.symbol)
-        self.ml = Box(self.frame, "b", (1,0), self.symbol)
-        self.mm = Box(self.frame, "b", (1,1), self.symbol)
-        self.mr = Box(self.frame, "b", (1,2), self.symbol)
-        self.bl = Box(self.frame, "b", (2,0), self.symbol)
-        self.bm = Box(self.frame, "b", (2,1), self.symbol)
-        self.br = Box(self.frame, "b", (2,2), self.symbol)
+        self.tl = Box(self.frame, "b", (0,0), self.symbol, self.client_socket, False)
+        self.tm = Box(self.frame, "b", (0,1), self.symbol, self.client_socket, False)
+        self.tr = Box(self.frame, "b", (0,2), self.symbol, self.client_socket, False)
+        self.ml = Box(self.frame, "b", (1,0), self.symbol, self.client_socket, False)
+        self.mm = Box(self.frame, "b", (1,1), self.symbol, self.client_socket, False)
+        self.mr = Box(self.frame, "b", (1,2), self.symbol, self.client_socket, False)
+        self.bl = Box(self.frame, "b", (2,0), self.symbol, self.client_socket, False)
+        self.bm = Box(self.frame, "b", (2,1), self.symbol, self.client_socket, False)
+        self.br = Box(self.frame, "b", (2,2), self.symbol, self.client_socket, False)
 
         #pack gui objects
         self.enter.grid(row=3, column=0)
@@ -69,16 +69,28 @@ class Client:
             print("[you]: {}".format(message))
             self.client_socket.send(encoded_message)
             self.text_delete()
-        
+
     #receive message thread
     def receive_messages(self):
         while True:
             try:
                 encoded_message = self.client_socket.recv(1024)
-                self.symb = encoded_message.decode()
-                self.init_grid(self.symb)
+                self.msg = encoded_message.decode()
+                if (self.msg == 'X' or self.msg == 'O'):
+                    self.init_grid(self.msg)
+                else:
+                    self.handle_pos(self.msg)
             except:
                 break
+
+    def handle_pos(self, pos):
+        string = str(pos)
+        tup = (int(string[0]), int(string[1]))
+        if (self.symbol == 'X'):
+            Box(self.frame, "o", tup, self.symbol, self.client_socket, True)
+        else:
+            Box(self.frame, "x", tup, self.symbol, self.client_socket, True)
+    
 
     def leave_session(self):
         exit_message = "exit".encode("utf-8")

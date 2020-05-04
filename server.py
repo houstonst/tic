@@ -63,7 +63,7 @@ class Server:
 				print("Wait until the other user takes their turn...")
 			else:
 				#send message to other user
-				modified_message = "[{}]: {}".format(username, message)
+				modified_message = message
 				mod_encoded_message = modified_message.encode("utf-8")
 				self.forward_message(conn, mod_encoded_message)
 
