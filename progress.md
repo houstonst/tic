@@ -8,6 +8,5 @@
 * X's stay when a box is clicked
 
 ## To Do
-* Configure for WAN with port-forwarding
 * Stop the game when someone has 3 boxes in a row
 * Allow user to only send one symbol at a time
