@@ -5,8 +5,13 @@
 * Users can only send one message at a time
 * Only two users are allowed to join
 * Make the tic-tac-toe board
-* X's stay when a box is clicked
+* Symbols stay when a box is clicked
+* Allow user to only send one symbol at a time; players take turns
 
 ## To Do
 * Stop the game when someone has 3 boxes in a row
-* Allow user to only send one symbol at a time
+* Include more GUI features. Indicate:
+    * Turn
+    * Winning trio
+    * Name
+    * Etc.
