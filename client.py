@@ -1,11 +1,95 @@
 from tkinter import *
-from classes.box import Box
 import socket, sys, _thread
+from PIL import Image, ImageTk
+
+class Box:
+    def __init__(self, frame, img, pos, sym, sock, is_set):
+        #sets variables to be used in other functions
+        self.is_set = is_set
+        self.sym = sym
+        self.pos = pos
+        self.sock = sock
+        self.turn_locked = False #controls whether the box can be played (based on who's turn it is)
+
+        #define image choices
+        self.blank_img = Image.open("./graphics/blank.PNG")
+        self.x_img = Image.open("./graphics/x.PNG")
+        self.o_img = Image.open("./graphics/o.PNG")
+
+        #create blank, X, or O image
+        self.graphic = None
+        if img == "b":
+            self.graphic = ImageTk.PhotoImage(self.blank_img)
+        elif img == "x":
+            self.graphic = ImageTk.PhotoImage(self.x_img)
+        else:
+            self.graphic = ImageTk.PhotoImage(self.o_img)
+
+        #create the object
+        self.label = Label(frame, image=self.graphic, borderwidth=5, relief="solid")
+
+        #create image reference or it won't display for some reason
+        self.label.image = self.graphic
+
+        #pack box into GUI frame
+        self.label.grid(row=pos[0], column=pos[1])
+
+        #bind events. Saved ID's so they can be unbinded later
+        if self.is_set == False:
+            self.mouse_over_id = self.label.bind("<Enter>", self.mouse_over)
+            self.mouse_leave_id = self.label.bind("<Leave>", self.mouse_leave)
+            self.mouse_click_id = self.label.bind("<Button-1>", self.mouse_click)            
+
+    def lock(self):
+        self.turn_locked = True
+    
+    def unlock(self):
+        self.turn_locked = False
+
+    def mouse_over(self, event):
+        if self.turn_locked == False:
+            if (self.sym == 'X'):
+                self.i = self.x_img
+            else:
+                self.i = self.o_img
+            self.graphic = ImageTk.PhotoImage(self.i)
+            self.label.configure(image=self.graphic)
+
+    def mouse_leave(self, event):
+        if self.turn_locked == False:
+            self.graphic = ImageTk.PhotoImage(self.blank_img)
+            self.label.configure(image=self.graphic)
+
+    def mouse_click(self, event):
+        if self.turn_locked == False:
+            self.graphic = ImageTk.PhotoImage(self.i)
+            self.label.configure(image=self.graphic)
+            self.send_message()
+            self.is_set == True
+            self.unbind()
+    
+    def send_message(self):
+        if self.turn_locked == False:
+            msg = ''
+            for i in self.pos:
+                msg += str(i)
+            encoded_message = (msg).encode("utf-8")
+            self.sock.send(encoded_message)
+            client.lock_boxes()
+        
+    #unbind events so a set box cannot be changed
+    def unbind(self):
+        self.label.unbind("<Enter>", self.mouse_over_id)
+        self.label.unbind("<Leave>", self.mouse_leave_id)
+        self.label.unbind("<Button-1>", self.mouse_click_id)
+
+#########################################################################################################
 
 class Client:
     def __init__(self):
         #define logic attributes
         self.username = None
+        self.turn = False
 
         #define gui attributes
         self.root = Tk()
@@ -33,6 +117,8 @@ class Client:
         self.bl = Box(self.frame, "b", (2,0), self.symbol, self.client_socket, False)
         self.bm = Box(self.frame, "b", (2,1), self.symbol, self.client_socket, False)
         self.br = Box(self.frame, "b", (2,2), self.symbol, self.client_socket, False)
+
+        self.gridList = [self.tl, self.tm, self.tr, self.ml, self.mm, self.mr, self.bl, self.bm, self.br]
 
         #pack gui objects
         self.enter.grid(row=3, column=0)
@@ -80,6 +166,14 @@ class Client:
             Box(self.frame, "o", tup, self.symbol, self.client_socket, True)
         else:
             Box(self.frame, "x", tup, self.symbol, self.client_socket, True)
+    
+    def lock_boxes(self):
+        for box in self.gridList:
+            box.turn_locked = True
+
+    def unlock_boxes(self):
+        for box in self.gridList:
+            box.turn_locked = False
 
     #receive message thread
     def receive_messages(self):
@@ -87,10 +181,19 @@ class Client:
             try:
                 encoded_message = self.client_socket.recv(1024)
                 self.msg = encoded_message.decode()
-                if (self.msg == 'X' or self.msg == 'O'):
+                if self.msg == 'X':
+                    print("YOU ARE PLAYER 1")
+                    self.turn = True #ensure they go first
                     self.init_grid(self.msg)
+                    self.unlock_boxes()
+                elif self.msg == 'O':
+                    print("YOU ARE PLAYER 2")
+                    self.turn = False #already false by default
+                    self.init_grid(self.msg)
+                    self.lock_boxes()
                 else:
                     self.handle_pos(self.msg)
+                    self.unlock_boxes()
             except:
                 break    
 
