@@ -8,6 +8,7 @@ class Box:
         self.is_set = is_set
         self.sym = sym
         self.pos = pos
+        self.img = img
         self.sock = sock
         self.turn_locked = False #controls whether the box can be played (based on who's turn it is)
 
@@ -40,34 +41,39 @@ class Box:
             self.mouse_leave_id = self.label.bind("<Leave>", self.mouse_leave)
             self.mouse_click_id = self.label.bind("<Button-1>", self.mouse_click)            
 
-    def lock(self):
-        self.turn_locked = True
-    
-    def unlock(self):
-        self.turn_locked = False
-
+    #display potential move
     def mouse_over(self, event):
         if self.turn_locked == False:
-            if (self.sym == 'X'):
+            if self.sym == 'X':
                 self.i = self.x_img
             else:
                 self.i = self.o_img
             self.graphic = ImageTk.PhotoImage(self.i)
             self.label.configure(image=self.graphic)
 
+    #clear potential move
     def mouse_leave(self, event):
         if self.turn_locked == False:
             self.graphic = ImageTk.PhotoImage(self.blank_img)
             self.label.configure(image=self.graphic)
 
+    #make a move
     def mouse_click(self, event):
         if self.turn_locked == False:
+            if self.sym == 'X':
+                self.img = 'x'
+                client.x_positions.add(self.pos)
+            else:
+                self.img = 'o'
+                client.o_positions.add(self.pos)
+            client.check_win()
             self.graphic = ImageTk.PhotoImage(self.i)
             self.label.configure(image=self.graphic)
             self.send_message()
             self.is_set == True
             self.unbind()
     
+    #send move to server
     def send_message(self):
         if self.turn_locked == False:
             msg = ''
@@ -103,6 +109,7 @@ class Client:
         self.close_button = Button(self.frame, text="Close", command=self.leave_session)
         self.root.bind("<Return>", self.send_message)
 
+    #initialize all instances of the Box class
     def init_grid(self, symbol):
         #assigns X's or O's for the user
         self.symbol = symbol 
@@ -118,13 +125,37 @@ class Client:
         self.bm = Box(self.frame, "b", (2,1), self.symbol, self.client_socket, False)
         self.br = Box(self.frame, "b", (2,2), self.symbol, self.client_socket, False)
 
-        self.gridList = [self.tl, self.tm, self.tr, self.ml, self.mm, self.mr, self.bl, self.bm, self.br]
+        #place boxes in matrix
+        self.gridList = [[self.tl, self.tm, self.tr], [self.ml, self.mm, self.mr], [self.bl, self.bm, self.br]]
+
+        #create sets to check against win conditions
+        self.x_positions = set()
+        self.o_positions = set()
 
         #pack gui objects
         self.enter.grid(row=3, column=0)
         self.send_button.grid(row=4, column=0)
         self.close_button.grid(row=3, column=2)
         self.frame.pack()
+
+    #compares running positional sets with win condition sets
+    def check_win(self):
+        win_conditions = [
+            {(0,0),(0,1),(0,2)},    #horizontal wins
+            {(1,0),(1,1),(1,2)},
+            {(2,0),(2,1),(2,2)},
+            {(0,0),(1,0),(2,0)},    #vertical wins
+            {(0,1),(1,1),(2,1)},
+            {(2,0),(1,2),(2,2)},
+            {(0,0),(1,1),(2,2)},    #diagonal wins
+            {(2,0),(1,1),(0,2)}
+        ]
+
+        for condition in win_conditions:
+            if condition.issubset(self.x_positions):
+                print("X wins with {}".format(condition))
+            elif condition.issubset(self.o_positions):
+                print("O wins with {}".format(condition))
 
     #begin connection to server
     def initialize_socket(self):
@@ -158,22 +189,29 @@ class Client:
             self.client_socket.send(encoded_message)
             self.text_delete()
     
-    #sent coordinate of clicked box to other user
+    #reconfigure particular box according to other user's move
     def handle_pos(self, pos):
         string = str(pos)
         tup = (int(string[0]), int(string[1]))
         if (self.symbol == 'X'):
-            Box(self.frame, "o", tup, self.symbol, self.client_socket, True)
+            self.gridList[tup[0]][tup[1]] = Box(self.frame, "o", tup, self.symbol, self.client_socket, True)
+            self.o_positions.add(tup)
         else:
-            Box(self.frame, "x", tup, self.symbol, self.client_socket, True)
-    
-    def lock_boxes(self):
-        for box in self.gridList:
-            box.turn_locked = True
+            self.gridList[tup[0]][tup[1]] = Box(self.frame, "x", tup, self.symbol, self.client_socket, True)
+            self.x_positions.add(tup)
+        self.check_win()
 
+    #prevent unsolicited move
+    def lock_boxes(self):
+        for row in self.gridList:
+            for box in row:
+                box.turn_locked = True
+
+    #allow a move
     def unlock_boxes(self):
-        for box in self.gridList:
-            box.turn_locked = False
+        for row in self.gridList:
+            for box in row:
+                box.turn_locked = False
 
     #receive message thread
     def receive_messages(self):
