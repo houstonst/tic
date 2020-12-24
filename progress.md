@@ -10,6 +10,7 @@
 * Detects a win (doesn't halt game, however)
 
 ## To Do
+* Prevent a game move from occurring before entering a username
 * Stop the game when someone has 3 boxes in a row
 * Include more GUI features. Indicate:
     * Turn
