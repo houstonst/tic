@@ -154,8 +154,10 @@ class Client:
         for condition in win_conditions:
             if condition.issubset(self.x_positions):
                 print("X wins with {}".format(condition))
+                self.lock_boxes()
             elif condition.issubset(self.o_positions):
                 print("O wins with {}".format(condition))
+                self.lock_boxes()
 
     #begin connection to server
     def initialize_socket(self):
