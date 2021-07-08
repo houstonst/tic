@@ -8,12 +8,14 @@
 * Symbols stay when a box is clicked
 * Allow user to only send one symbol at a time; players take turns
 * Detects a win (doesn't halt game, however)
+* Stop the game when someone has 3 boxes in a row
 
 ## To Do
 * Prevent a game move from occurring before entering a username
-* Stop the game when someone has 3 boxes in a row
 * Include more GUI features. Indicate:
     * Turn
     * Winning trio
     * Name
     * Etc.
+* Text messages destroy game
+* Last graphic not showing up for receiving user

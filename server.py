@@ -3,7 +3,7 @@ import socket, _thread
 class Server:
 	def __init__(self):
 		#specify network parameter
-		HOST = "127.0.0.1"
+		HOST = "192.168.1.205"
 		PORT = 2000
 
 		#specify user parameters
@@ -33,9 +33,11 @@ class Server:
 
 	#send a message from one user to another
 	def forward_message(self, conn, encoded_message):
+		print('here')
 		for user_conn in self.users.keys():
 			if user_conn != conn:
 				user_conn.send(encoded_message)
+				print("also here")
 
 	#assign each user an X or an O
 	def assign_symbol(self, conn):

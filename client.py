@@ -4,7 +4,7 @@ from PIL import Image, ImageTk
 
 class Box:
     def __init__(self, frame, img, pos, sym, sock, is_set):
-        #sets variables to be used in other functions
+        #sets the variables to be used in other functions
         self.is_set = is_set
         self.sym = sym
         self.pos = pos
@@ -164,7 +164,7 @@ class Client:
         self.client_socket = socket.socket(socket.AF_INET, socket.SOCK_STREAM)
 
         #connect to server's address and port
-        HOST = "127.0.0.1"
+        HOST = "192.168.1.205"
         PORT = 2000
         self.client_socket.connect((HOST, PORT))
 
